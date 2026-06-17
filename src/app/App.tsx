@@ -380,7 +380,7 @@ function TitleScreen({
       }}
     >
       {/* زرار المتصدرين المربع في أعلى اليمين */}
-      <motion.button
+     { /*<motion.button
         whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.9 }}
         onClick={onShowLeaderboard}
@@ -393,7 +393,7 @@ function TitleScreen({
         title="لوحة المتصدرين"
       >
         <span className="text-3xl" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🏆</span>
-      </motion.button>
+      </motion.button> */}
 
       {/* Stars background */}
       {Array.from({ length: 20 }).map((_, i) => (
