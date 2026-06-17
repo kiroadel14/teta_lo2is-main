@@ -52,7 +52,7 @@ export default function App() {
   // 2. سحب البيانات من Firestore لو اليوزر مسجل دخول
   useEffect(() => {
     if (user) {
-  const fetchUserData = async () => {
+      const fetchUserData = async () => {
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
 
@@ -61,15 +61,15 @@ export default function App() {
           if (data.unlockedLevels) {
             const unlockedObj: Record<string, boolean> = {};
             data.unlockedLevels.forEach((id: string) => { unlockedObj[id] = true; });
-            unlockedObj.level_1 = true; 
+            unlockedObj.level_1 = true;
             setUnlockedLevelIds(unlockedObj);
           }
           if (data.stars) setLevelStars(data.stars);
           if (data.scores) setLevelScores(data.scores);
-          
+
           // تحديث بيانات المستخدم القديم لو معندوش اسم
           if (!data.displayName && user.displayName) {
-            try { await updateDoc(docRef, { displayName: user.displayName, email: user.email }); } catch(e){}
+            try { await updateDoc(docRef, { displayName: user.displayName, email: user.email }); } catch (e) { }
           }
         } else {
           await setDoc(docRef, {
@@ -111,12 +111,12 @@ export default function App() {
       const usersRef = collection(db, "users");
       const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
       const querySnapshot = await getDocs(q);
-      
+
       const list: any[] = [];
       querySnapshot.forEach((doc) => {
         list.push({ id: doc.id, ...doc.data() });
       });
-      
+
       setLeaderboardData(list);
       setScreen('leaderboard');
     } catch (error) {
@@ -128,7 +128,7 @@ export default function App() {
   // 3. حفظ التقدم في Firestore بعد نهاية السباق (في كل الأحوال)
   const handleGameOver = async (result: GameResult) => {
     setGameResult(result);
-    
+
     // 1. تحديث النجوم (بناخد الأعلى دايماً سواء كسب أو خسر)
     const currentStars = levelStars[selectedLevelId] ?? 0;
     const newStars = Math.max(currentStars, result.stars);
@@ -151,7 +151,7 @@ export default function App() {
     if (result.won) {
       const currentIndex = LEVELS.findIndex((l) => l.id === selectedLevelId);
       const nextLevel = currentIndex >= 0 ? LEVELS[currentIndex + 1] : undefined;
-      
+
       if (nextLevel) {
         updatedUnlockedIds[nextLevel.id] = true;
         nextLevelIdToSave = nextLevel.id;
@@ -161,28 +161,28 @@ export default function App() {
 
     // 5. الرفع على الداتابيز لو هو مش زائر (في كل الأحوال)
     if (user) {
-        const docRef = doc(db, "users", user.uid);
-        try {
-          await updateDoc(docRef, {
-            stars: updatedStars,
-            scores: updatedScores,
-            totalScore: totalScore,
-            displayName: user.displayName || "", // تأكد إن السطر ده موجود هنا
-            unlockedLevels: Object.keys(updatedUnlockedIds).filter((id) => updatedUnlockedIds[id]),
-            currentLevel: nextLevelIdToSave
-          });
-        } catch (error) {
-          // لو الملف مش موجود أصلاً (حالة نادرة) استخدم setDoc
-          await setDoc(docRef, {
-            displayName: user.displayName || "",
-            totalScore: totalScore,
-            stars: updatedStars,
-            scores: updatedScores,
-            unlockedLevels: Object.keys(updatedUnlockedIds).filter((id) => updatedUnlockedIds[id])
-          }, { merge: true });
-        }
+      const docRef = doc(db, "users", user.uid);
+      try {
+        await updateDoc(docRef, {
+          stars: updatedStars,
+          scores: updatedScores,
+          totalScore: totalScore,
+          displayName: user.displayName || "", // تأكد إن السطر ده موجود هنا
+          unlockedLevels: Object.keys(updatedUnlockedIds).filter((id) => updatedUnlockedIds[id]),
+          currentLevel: nextLevelIdToSave
+        });
+      } catch (error) {
+        // لو الملف مش موجود أصلاً (حالة نادرة) استخدم setDoc
+        await setDoc(docRef, {
+          displayName: user.displayName || "",
+          totalScore: totalScore,
+          stars: updatedStars,
+          scores: updatedScores,
+          unlockedLevels: Object.keys(updatedUnlockedIds).filter((id) => updatedUnlockedIds[id])
+        }, { merge: true });
       }
-    
+    }
+
     setScreen('results');
   };
 
@@ -214,10 +214,10 @@ export default function App() {
             className="absolute inset-0"
           >
             <TitleScreen
-              onStart={() => setScreen('levelSelect')} 
+              onStart={() => setScreen('levelSelect')}
               onLogin={() => setScreen('auth')}
               onShowLeaderboard={fetchLeaderboard} // تمرير دالة الليدربورد
-              user={user} 
+              user={user}
             />
           </motion.div>
         )}
@@ -233,25 +233,24 @@ export default function App() {
           >
             <div className="bg-slate-800/90 p-6 rounded-3xl border-4 border-yellow-400 w-full max-w-md shadow-2xl flex flex-col max-h-[80vh]">
               <h2 className="text-3xl font-black text-center text-yellow-300 mb-4 drop-shadow">🏆 لوحة المتصدرين</h2>
-              
+
               <div className="overflow-y-auto flex-1 flex flex-col gap-2 pr-1">
                 {leaderboardData.length === 0 ? (
                   <p className="text-center text-slate-400 mt-4">لا يوجد لاعبين حتى الآن</p>
                 ) : (
                   leaderboardData.map((player, index) => (
-                    <div 
-                      key={player.id} 
-                      className={`flex items-center justify-between p-3 rounded-xl font-bold ${
-                        player.id === user?.uid ? 'bg-yellow-500 text-slate-900 border-2 border-white' : 'bg-slate-700 text-white'
-                      }`}
+                    <div
+                      key={player.id}
+                      className={`flex items-center justify-between p-3 rounded-xl font-bold ${player.id === user?.uid ? 'bg-yellow-500 text-slate-900 border-2 border-white' : 'bg-slate-700 text-white'
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xl w-6 text-center">
                           {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`}
                         </span>
-                       <span className="truncate max-w-[180px] text-sm">
-                        {player.displayName ? player.displayName : (player.email ? player.email.split('@')[0] : 'لاعب زائر')}
-                      </span>
+                        <span className="truncate max-w-[180px] text-sm">
+                          {player.displayName ? player.displayName : (player.email ? player.email.split('@')[0] : 'لاعب زائر')}
+                        </span>
                       </div>
                       <span className="text-yellow-300 font-black bg-slate-900/40 px-3 py-1 rounded-lg text-sm">
                         {player.totalScore ?? 0} نقطة
@@ -297,7 +296,7 @@ export default function App() {
             className="absolute inset-0"
           >
             <LevelSelect onSelectLevel={handleSelectLevel} levelStars={levelStars} unlockedLevelIds={unlockedLevelIdsForSelect}
-            onBack={() => setScreen('title')} />
+              onBack={() => setScreen('title')} />
           </motion.div>
         )}
 
@@ -362,14 +361,14 @@ export default function App() {
 function TitleScreen({
   onStart,
   onLogin,
-  onShowLeaderboard, 
+  onShowLeaderboard,
   user,
 }: {
   onStart: () => void;
   onLogin: () => void;
-  onShowLeaderboard: () => void; 
+  onShowLeaderboard: () => void;
   user: any;
-}) { 
+}) {
   return (
     <div
       dir="rtl"
@@ -433,11 +432,12 @@ function TitleScreen({
         transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
         className="flex flex-col items-center gap-3 z-10 mb-8"
       >
-        <img 
-          src="logos/logo.png" 
-          alt="Teta Lo2is Logo" 
+        <img
+          src="logos/logo.png"
+          alt="Teta Lo2is Logo"
           className="w-32 h-auto object-contain mb-2 drop-shadow-lg"
         />
+
         <div
           className="px-10 py-4 rounded-3xl shadow-2xl text-center"
           style={{
@@ -452,6 +452,7 @@ function TitleScreen({
           >
             لعبة السيارات التعليمية
           </p>
+
           <h1
             className="text-white"
             style={{
@@ -517,12 +518,7 @@ function TitleScreen({
           </motion.button>
         )}
 
-        <p
-          className="text-blue-200 text-center mt-4"
-          style={{ fontSize: 'clamp(0.6rem, 1.3vw, 0.75rem)', fontWeight: 600, opacity: 0.8 }}
-        >
-          استخدم ▶ ◀ أو اضغط على الشاشة للتحكم
-        </p>
+
       </motion.div>
 
       <style>{`
