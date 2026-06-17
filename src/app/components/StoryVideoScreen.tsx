@@ -34,7 +34,6 @@ export function StoryVideoScreen({ level, onPlay, onBack }: StoryVideoScreenProp
   const [controlsVisible, setControlsVisible] = useState(true);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const controlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const sceneBg = SCENE_BG[level.id] ?? SCENE_BG['level_1'];
 
@@ -80,14 +79,6 @@ export function StoryVideoScreen({ level, onPlay, onBack }: StoryVideoScreenProp
     return () => { if (tickRef.current) clearInterval(tickRef.current); };
   }, [videoState]);
 
-  // Wire real <video> element if present
-  useEffect(() => {
-    const vid = videoRef.current;
-    if (!vid) return;
-    if (videoState === 'playing') vid.play().catch(() => {});
-    else if (videoState === 'paused') vid.pause();
-  }, [videoState]);
-
   const togglePlayPause = () => {
     if (videoState === 'ended') return;
     setVideoState((s) => (s === 'playing' ? 'paused' : 'playing'));
@@ -98,11 +89,10 @@ export function StoryVideoScreen({ level, onPlay, onBack }: StoryVideoScreenProp
     setVideoState('ended');
     setProgress(100);
     setElapsed(VIDEO_DURATION);
-    if (videoRef.current) videoRef.current.pause();
   };
 
   const elapsedLabel = `${toArabicNumerals(Math.floor(elapsed / 60))}:${String(Math.floor(elapsed % 60)).padStart(2, '0').replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)])}`;
-  const totalLabel   = `${toArabicNumerals(Math.floor(VIDEO_DURATION / 60))}:${String(VIDEO_DURATION % 60).padStart(2, '0').replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)])}`;
+  const totalLabel = `${toArabicNumerals(Math.floor(VIDEO_DURATION / 60))}:${String(VIDEO_DURATION % 60).padStart(2, '0').replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)])}`;
 
   return (
     <div
@@ -111,14 +101,14 @@ export function StoryVideoScreen({ level, onPlay, onBack }: StoryVideoScreenProp
       style={{ fontFamily: "'Cairo', sans-serif", background: '#000' }}
       onClick={() => { if (videoState !== 'ended') showControlsTemporarily(); }}
     >
-      {/* ── VIDEO ELEMENT (hidden if src 404s; fallback scene shows behind) ── */}
-      <video
-        ref={videoRef}
-        src={level.videoUrl}
-        className="absolute inset-0 w-full h-full object-cover"
-        playsInline
-        onError={() => { /* fail silently — fallback scene is already visible */ }}
-        style={{ opacity: 0.001 }} // keep DOM but rely on fallback; set to 1 once real assets exist
+      {/* ── YOUTUBE EMBED ── */}
+      <iframe
+        src={`${level.videoUrl}?autoplay=1&controls=0&rel=0&showinfo=0`}
+        title={`Story video — ${level.nameAr}`}
+        className="absolute inset-0 w-full h-full border-0"
+        style={{ zIndex: 10 }}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
       />
 
       {/* ── FALLBACK ILLUSTRATED SCENE ── */}

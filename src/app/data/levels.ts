@@ -69,7 +69,7 @@ export const LEVELS: Level[] = [
   {
     id: 'level_1',
     nameAr: 'الخليقة',
-    videoUrl: 'video/level1/story.mp4',
+    videoUrl: 'https://www.youtube.com/embed/KJ0Sn9Oncbs',
     thumbnail: '🌿',
     color: '#22C55E',
     bgColor: '#DCFCE7',
@@ -87,7 +87,7 @@ export const LEVELS: Level[] = [
   {
     id: 'level_2',
     nameAr: 'آدم و حواء',
-    videoUrl: 'video/level2/story.mp4',
+    videoUrl: 'https://www.youtube.com/embed/sHgEoyM0LR8',
     thumbnail: '🐍',
     color: '#0f5c2f',
     bgColor: '#DBEAFE',
@@ -106,7 +106,7 @@ export const LEVELS: Level[] = [
   {
     id: 'level_3',
     nameAr: 'قايين وهابيل',
-    videoUrl: 'video/level3/story.mp4',
+    videoUrl: 'https://www.youtube.com/embed/IrNpTfpY6eA',
     thumbnail: '🏜️',
     color: '#F59E0B',
     bgColor: '#FEF3C7',
@@ -125,7 +125,7 @@ export const LEVELS: Level[] = [
   {
     id: 'level_4',
     nameAr: 'نوح و الفلك',
-    videoUrl: 'video/level4/story.mp4',
+    videoUrl: 'https://www.youtube.com/embed/InVo5hcguJc',
     thumbnail: '🌊',
     color: '#3B82F6',
     bgColor: '#EDE9FE',
@@ -143,7 +143,7 @@ export const LEVELS: Level[] = [
   {
     id: 'level_5',
     nameAr: 'بابل',
-    videoUrl: 'video/level5/story.mp4',
+    videoUrl: 'https://www.youtube.com/embed/-1WjU3CMRHQ',
     thumbnail: '🌎',
     color: '#EC4899',
     bgColor: '#FCE7F3',
@@ -161,7 +161,7 @@ export const LEVELS: Level[] = [
   {
     id: 'level_6',
     nameAr: 'إبراهيم',
-    videoUrl: 'video/level6/story.mp4',
+    videoUrl: 'https://www.youtube.com/embed/01SdS8OEb_E',
     thumbnail: '⭐',
     color: '#F97316',
     bgColor: '#FFEDD5',
