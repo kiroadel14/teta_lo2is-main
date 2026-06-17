@@ -687,7 +687,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               
               {/* صورة عربية العقبات */}
               <image 
-                href="public/Photos/enemy-car.png" 
+               href="./enemy-car.png"
                 x={-s * 0.9} 
                 y={-s * 1.5} 
                 width={s * 1.8} 
@@ -711,7 +711,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               
               {/* صورة عربية اللاعب */}
               <image 
-                href="public/Photos/player-car.png" 
+                href="./player-car.png" 
                 x={-s * 0.95} 
                 y={-s * 1.6} 
                 width={s * 1.9} 
