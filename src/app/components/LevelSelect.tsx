@@ -17,14 +17,18 @@ export function LevelSelect({ onSelectLevel, levelStars, unlockedLevelIds , onBa
       className="relative w-full h-full overflow-hidden flex flex-col"
       style={{ background: 'linear-gradient(180deg, #60A5FA 0%, #93C5FD 40%, #BFDBFE 100%)', fontFamily: "'Cairo', sans-serif" }}
     >
-      {/* زرار الرجوع */}
+      {/* زرار الرجوع المحدث (سهم فقط ومظبوط للموبايل) */}
       {onBack && (
         <button
           onClick={onBack}
-          className="absolute top-6 left-6 z-50 bg-red-600 hover:bg-red-700 text-white font-black py-2 px-6 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center w-12 h-12 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
           style={{ border: '3px solid #FCA5A5' }}
+          title="رجوع للقائمة الرئيسية"
         >
-          رجوع ↩
+          {/* أيقونة سهم لليمين (لأن اللعبة عربي) */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
         </button>
       )}
       {/* Clouds */}
