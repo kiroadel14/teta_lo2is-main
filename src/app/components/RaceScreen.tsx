@@ -3,7 +3,8 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Pause, Play, ChevronRight } from 'lucide-react';
 import { Level } from '../data/levels';
 import { GasStationModal } from './GasStationModal';
-
+import playerCarImg from './player-car.png';
+import enemyCarImg from './enemy-car.png';
 interface Obstacle {
   id: number;
   lane: number; // 0=left, 1=center, 2=right
@@ -687,7 +688,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               
               {/* صورة عربية العقبات */}
               <image 
-               href="./enemy-car.png"
+                href={enemyCarImg} 
                 x={-s * 0.9} 
                 y={-s * 1.5} 
                 width={s * 1.8} 
@@ -711,7 +712,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               
               {/* صورة عربية اللاعب */}
               <image 
-                href="./player-car.png" 
+                href={playerCarImg} 
                 x={-s * 0.95} 
                 y={-s * 1.6} 
                 width={s * 1.9} 
