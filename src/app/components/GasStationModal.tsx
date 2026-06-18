@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { LevelQuestion } from '../data/levels';
-
+import fuelBonusSound from './fuel-bonus.mp3';
+import wrongSound from './wrong.mp3';
 interface GasStationModalProps {
   questions: LevelQuestion[];
   onComplete: (correctCount: number) => void;
@@ -59,7 +60,14 @@ export function GasStationModal({ questions, onComplete }: GasStationModalProps)
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const question = questions[currentQ];
+// ── مراجع الأصوات اللحظية ──
+  const correctAudioRef = useRef<HTMLAudioElement | null>(null);
+  const wrongAudioRef = useRef<HTMLAudioElement | null>(null);
 
+  useEffect(() => {
+    correctAudioRef.current = new Audio(fuelBonusSound);
+    wrongAudioRef.current = new Audio(wrongSound);
+  }, []);
   // Reset audio on question change
   useEffect(() => {
     if (audioRef.current) {
@@ -87,7 +95,7 @@ export function GasStationModal({ questions, onComplete }: GasStationModalProps)
     }
   };
 
-  const handleAnswer = (answerId: string, isCorrect: boolean) => {
+ const handleAnswer = (answerId: string, isCorrect: boolean) => {
     if (answerState !== 'idle') return;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
     setAudioPlaying(false);
@@ -95,10 +103,17 @@ export function GasStationModal({ questions, onComplete }: GasStationModalProps)
     setSelectedId(answerId);
     const nextCorrect = isCorrect ? correctCount + 1 : correctCount;
     setAnswerState(isCorrect ? 'correct' : 'incorrect');
+
     if (isCorrect) {
+      // 👇 تشغيل صوت الإجابة الصح فوراً
+      correctAudioRef.current?.play().catch(() => {});
+      
       setCorrectCount(nextCorrect);
       setShowFuelAnim(true);
       setTimeout(() => setShowFuelAnim(false), 1200);
+    } else {
+      // 👇 تشغيل صوت الإجابة الغلط فوراً
+      wrongAudioRef.current?.play().catch(() => {});
     }
 
     setTimeout(() => {
@@ -117,7 +132,6 @@ export function GasStationModal({ questions, onComplete }: GasStationModalProps)
       }
     }, 1400);
   };
-
   return (
     <div dir="rtl" className="absolute inset-0 flex flex-col items-center justify-end z-50" style={{ fontFamily: "'Cairo', sans-serif" }}>
       {/* Dimmed backdrop */}

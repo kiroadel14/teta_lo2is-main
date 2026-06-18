@@ -7,6 +7,11 @@ import playerCarImg from './player-car.png';
 import enemyCar1Img from './enemy-car-1.png'; // عدلنا الاسم هنا
 import enemyCar2Img from './enemy-car-2.png';
 import enemyCar3Img from './enemy-car-3.png';
+import mainLoopSound from './main-loop.mp3';
+import crashSound from './crash.mp3';
+import fuelBonusSound from './fuel-bonus.mp3';
+import winnerGameSound from './winner-game.mp3';
+import gameOverSound from './game-over.mp3';
 const ENEMY_CARS = [enemyCar1Img, enemyCar2Img, enemyCar3Img];interface Obstacle {
   id: number;
   lane: number; // 0=left, 1=center, 2=right
@@ -141,6 +146,39 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
   const DISTANCE_SPEED = level.survivalTargetDistance / TARGET_DURATION_SECONDS;
   const FUEL_DRAIN_PER_SECOND = 100 / (TARGET_DURATION_SECONDS * 1.15);
 
+  // ── مراجع الأصوات ──
+  const mainLoopRef = useRef<HTMLAudioElement | null>(null);
+  const crashRef = useRef<HTMLAudioElement | null>(null);
+  const fuelBonusRef = useRef<HTMLAudioElement | null>(null);
+  const winnerRef = useRef<HTMLAudioElement | null>(null);
+  const gameOverRef = useRef<HTMLAudioElement | null>(null);
+
+  // ── تشغيل وتجهيز الأصوات ──
+  useEffect(() => {
+    mainLoopRef.current = new Audio(mainLoopSound);
+    mainLoopRef.current.loop = true; // عشان يفضل شغال طول السباق
+    mainLoopRef.current.volume = 0.3; // نوطي الصوت شوية عشان الإزعاج
+
+    crashRef.current = new Audio(crashSound);
+    fuelBonusRef.current = new Audio(fuelBonusSound);
+    winnerRef.current = new Audio(winnerGameSound);
+    gameOverRef.current = new Audio(gameOverSound);
+
+    mainLoopRef.current.play().catch(() => {});
+
+    return () => {
+      mainLoopRef.current?.pause(); // نقفل الصوت لو طلعنا من السباق
+    };
+  }, []);
+
+  // ── إيقاف وتشغيل الصوت مع الـ Pause ──
+  useEffect(() => {
+    if (paused || showGasStation) {
+      mainLoopRef.current?.pause();
+    } else {
+      mainLoopRef.current?.play().catch(() => {});
+    }
+  }, [paused, showGasStation]);
   // Sync refs with state
   useEffect(() => { pausedRef.current = paused; }, [paused]);
   useEffect(() => { playerLaneRef.current = playerLane; }, [playerLane]);
@@ -257,6 +295,9 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
             (obs) => obs.lane === playerLaneRef.current && obs.t > 0.88 && obs.t < 1.05
           );
           if (hitting) {
+            // 👇 السطر الجديد اللي ضفناه عشان يشغل صوت الخبطة
+            crashRef.current?.play().catch(() => {}); 
+            
             collisionCooldownRef.current = 90;
             fuelRef.current = Math.max(0, fuelRef.current - 20);
             setShowCollision(true);
@@ -279,6 +320,8 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
         // Game over: fuel empty (before finish)
         if (fuelRef.current <= 0 && !gameOverFiredRef.current) {
           gameOverFiredRef.current = true;
+          // 👇 ده السطر بتاع صوت الخسارة
+          gameOverRef.current?.play().catch(() => {});
           const finalScore = scoreRef.current;
           const stars = finalScore >= level.survivalTargetDistance ? 3 : finalScore >= level.survivalTargetDistance * 0.6 ? 2 : finalScore >= level.survivalTargetDistance * 0.3 ? 1 : 0;
           onGameOver({ won: false, score: finalScore, stars });
@@ -288,6 +331,10 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
         // Win: full distance completed AND still have fuel
         if (distanceRef.current >= level.survivalTargetDistance && fuelRef.current > 0 && !gameOverFiredRef.current) {
           gameOverFiredRef.current = true;
+          
+          // 👇 السطر ده هيشغل صوت الفوز والاحتفال
+          winnerRef.current?.play().catch(() => {}); 
+          
           const finalScore = scoreRef.current;
           const stars = fuelRef.current >= 60 ? 3 : fuelRef.current >= 30 ? 2 : 1;
           onGameOver({ won: true, score: finalScore, stars });
@@ -307,14 +354,13 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
     return () => cancelAnimationFrame(animId);
   }, [level, onGameOver]);
 
-  const handleGasStationComplete = (correctCount: number) => {
-    const fuelBonus = correctCount * 25; // 0, 25, 50, or 75
+const handleGasStationComplete = (correctCount: number) => {
+    const fuelBonus = correctCount * 25; 
     fuelRef.current = Math.min(100, fuelRef.current + fuelBonus);
     setFuel(fuelRef.current);
     showGasStationRef.current = false;
     setShowGasStation(false);
   };
-
   // Fuel state
   const fuelState: 'critical' | 'low' | 'normal' =
     fuel < 5 ? 'critical' : fuel < 25 ? 'low' : 'normal';
@@ -704,7 +750,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               <image
                 href={imgSrc}
                 x={-s * 1.1}
-                y={-s * 1.8}
+                y={-s * 1.4}
                 width={s * 2.2}
                 height={s * 2.2}
                 preserveAspectRatio="xMidYMid meet"
@@ -735,7 +781,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               <image
                 href={playerCarImg}
                 x={-s * 0.95}
-                y={-s * 1.6}
+                y={-s * 1.3}
                 width={s * 1.9}
                 height={s * 1.9}
                 preserveAspectRatio="xMidYMid meet"
