@@ -4,13 +4,16 @@ import { Pause, Play, ChevronRight } from 'lucide-react';
 import { Level } from '../data/levels';
 import { GasStationModal } from './GasStationModal';
 import playerCarImg from './player-car.png';
-import enemyCarImg from './enemy-car.png';
-interface Obstacle {
+import enemyCar1Img from './enemy-car-1.png'; // عدلنا الاسم هنا
+import enemyCar2Img from './enemy-car-2.png';
+import enemyCar3Img from './enemy-car-3.png';
+const ENEMY_CARS = [enemyCar1Img, enemyCar2Img, enemyCar3Img];interface Obstacle {
   id: number;
   lane: number; // 0=left, 1=center, 2=right
   t: number; // 0=far, 1=very close
   color: string;
   colorDark: string;
+  spriteIndex: number;
 }
 
 interface RaceScreenProps {
@@ -219,18 +222,24 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
         // Road scroll animation
         setScrollOffset((s) => (s + level.obstacleSpeed * deltaSeconds * 6000) % 10);
 
-        // Spawn obstacles
+        // 👈 السطر ده اللي كان ناقص عشان العداد يشتغل!
         spawnFrameCounter.current += deltaSeconds * 60;
+
+        // Spawn obstacles
         if (spawnFrameCounter.current >= level.spawnRate) {
           spawnFrameCounter.current -= level.spawnRate;
+          
           const lane = Math.floor(Math.random() * 3);
-          const colorPick = OBSTACLE_COLORS[Math.floor(Math.random() * OBSTACLE_COLORS.length)];
+          // بيختار رقم عشوائي (0 أو 1 أو 2)
+          const spriteIndex = Math.floor(Math.random() * ENEMY_CARS.length);
+
           const newObs: Obstacle = {
             id: obstacleIdCounter.current++,
             lane,
             t: 0.05,
-            color: colorPick.color,
-            colorDark: colorPick.dark,
+            color: '#000', // لون وهمي عشان الـ interface
+            colorDark: '#000', // لون وهمي عشان الـ interface
+            spriteIndex   // بنحفظ الرقم هنا
           };
           obstaclesRef.current = [...obstaclesRef.current, newObs];
         }
@@ -676,23 +685,28 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
         <rect width="100" height="100" fill="url(#bottomVignette)" style={{ pointerEvents: 'none' }} />
 
         {/* Obstacle cars */}
+        {/* Enemy cars */}
         {obstacles.map((obs) => {
           const cx = laneXAtT(obs.lane, obs.t);
           const cy = yAtT(obs.t);
-          const s = obs.t * 5; // car size
+          // 👈 التعديل هنا: كبرنا معامل الحجم الأساسي من 5 لـ 5.5 عشان تزيد حجم العربية "حاجه بسيطه اوي"
+          const s = obs.t * 5.5; // car size
           if (s < 0.5) return null;
+
+          const imgSrc = ENEMY_CARS[obs.spriteIndex];
+
           return (
             <g key={obs.id} transform={`translate(${cx}, ${cy})`}>
-              {/* ظل بسيط تحت العربية عشان الواقعية */}
-              <ellipse cx="0" cy={s * 0.15} rx={s * 0.7} ry={s * 0.15} fill="black" opacity="0.4" />
-              
-              {/* صورة عربية العقبات */}
-              <image 
-                href={enemyCarImg} 
-                x={-s * 0.9} 
-                y={-s * 1.5} 
-                width={s * 1.8} 
-                height={s * 1.8} 
+              {/* ظل أرضي متناسق مع الحجم الجديد، قربناه حاجة بسيطة كمان (cy={s * 0.22}) */}
+              <ellipse cx="0" cy={s * 0.22} rx={s * 0.9} ry={s * 0.25} fill="black" opacity="0.45" />
+             
+              {/* التوسيط والابعاد تعتمد على s الجديد، فتكبر العربيه */}
+              <image
+                href={imgSrc}
+                x={-s * 1.1}
+                y={-s * 1.8}
+                width={s * 2.2}
+                height={s * 2.2}
                 preserveAspectRatio="xMidYMid meet"
               />
             </g>
@@ -707,10 +721,10 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               animate={{ x: laneXAtT(playerLane, 1.0), y: cy }}
               transition={{ type: 'tween', duration: 0.15, ease: 'easeOut' }}
             >
-              {/* ظل العربية */}
-              <ellipse cx="0" cy={s * 0.15} rx={s * 0.85} ry={s * 0.22} fill="black" opacity="0.4" />
+              {/* ظل أرضي مظبوط لعربية اللاعب */}
+              <ellipse cx="0" cy={s * 0.25} rx={s * 0.9} ry={s * 0.28} fill="black" opacity="0.5" />
               
-              {/* صورة عربية اللاعب */}
+              {/* شيلنا الاهتزاز المزعج ورجعناها ثابتة وراسية */}
               <image 
                 href={playerCarImg} 
                 x={-s * 0.95} 
@@ -814,8 +828,8 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
           </div>
         </div>
 
-        {/* Lane indicators */}
-        <div className="flex justify-center mt-1 gap-2">
+       {/* Lane indicators */}
+        <div className="flex justify-center mt-1 gap-2" dir="ltr">
           {[0, 1, 2].map((lane) => (
             <div
               key={lane}

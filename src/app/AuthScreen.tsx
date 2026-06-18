@@ -8,13 +8,16 @@ import {
 import { doc, setDoc } from "firebase/firestore"; // ضفنا دول عشان نرفع الاسم لليدربورد
 
 import { auth, db } from "../firebase"; // ضفنا db هنا
+import { ChevronRight } from 'lucide-react';
 
 interface AuthScreenProps {
   onLoginSuccess: () => void;
+  onBack: () => void; // ضفنا خاصية الرجوع هنا
 }
 
 export default function AuthScreen({
   onLoginSuccess,
+  onBack, // استلمناها هنا
 }: AuthScreenProps) {
   const [isLoginMode, setIsLoginMode] = useState(true); // عشان نبدل بين تسجيل الدخول وإنشاء حساب
   const [firstName, setFirstName] = useState("");
@@ -107,8 +110,16 @@ export default function AuthScreen({
   return (
     <div
       dir="rtl"
-      className="w-full h-full flex items-center justify-center bg-slate-900/50"
+      className="relative w-full h-full flex items-center justify-center bg-slate-900/50"
     >
+      {/* ── زرار الرجوع ── */}
+      <button
+        onClick={onBack}
+        className="absolute top-6 left-6 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-white text-blue-900 shadow-lg hover:scale-105 active:scale-95 transition-all"
+      >
+        <ChevronRight size={28} />
+      </button>
+
       <form 
         onSubmit={isLoginMode ? handleLogin : handleRegister}
         className="bg-white p-6 rounded-3xl shadow-2xl flex flex-col gap-3 w-[90%] max-w-[360px] border-4 border-blue-500"

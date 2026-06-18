@@ -282,6 +282,7 @@ export default function App() {
               onLoginSuccess={() => {
                 setScreen('levelSelect');
               }}
+              onBack={() => setScreen('title')}
             />
           </motion.div>
         )}
@@ -379,7 +380,7 @@ function TitleScreen({
       }}
     >
       {/* زرار المتصدرين المربع في أعلى اليمين */}
-     { /*<motion.button
+      <motion.button
         whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.9 }}
         onClick={onShowLeaderboard}
@@ -392,7 +393,7 @@ function TitleScreen({
         title="لوحة المتصدرين"
       >
         <span className="text-3xl" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>🏆</span>
-      </motion.button> */}
+      </motion.button>
 
       {/* Stars background */}
       {Array.from({ length: 20 }).map((_, i) => (
@@ -426,29 +427,32 @@ function TitleScreen({
         </div>
       </div>
 
-      <motion.div
+   <motion.div
         initial={{ scale: 0.8, opacity: 0, y: -20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
         className="flex flex-col items-center gap-3 z-10 mb-8"
       >
+        {/* ── التعديل الأول: تكبير اللوجو ── */}
         <img
           src="logos/logo.png"
           alt="Teta Lo2is Logo"
-          className="w-32 h-auto object-contain mb-2 drop-shadow-lg"
+          className="w-64 h-auto object-contain mb-1 drop-shadow-2xl"
         />
 
+        {/* ── التعديل التاني: تصغير المربع البرتقالي ── */}
+        {/* ── المربع البرتقالي بعد التصغير ── */}
         <div
-          className="px-10 py-4 rounded-3xl shadow-2xl text-center"
+          className="px-5 py-2 rounded-2xl shadow-xl text-center max-w-[240px]"
           style={{
             background: 'linear-gradient(135deg, #F97316, #EF4444)',
-            border: '4px solid #FCD34D',
-            boxShadow: '0 8px 32px rgba(239,68,68,0.4), 0 0 0 4px rgba(252,211,77,0.3)',
+            border: '3px solid #FCD34D',
+            boxShadow: '0 6px 20px rgba(239,68,68,0.4), 0 0 0 3px rgba(252,211,77,0.3)',
           }}
         >
           <p
-            className="text-yellow-200 mb-1"
-            style={{ fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)', fontWeight: 700, letterSpacing: '0.05em' }}
+            className="text-yellow-200 mb-0.5"
+            style={{ fontSize: 'clamp(0.55rem, 1.2vw, 0.7rem)', fontWeight: 700, letterSpacing: '0.05em' }}
           >
             لعبة السيارات التعليمية
           </p>
@@ -456,19 +460,19 @@ function TitleScreen({
           <h1
             className="text-white"
             style={{
-              fontSize: 'clamp(2rem, 6vw, 3.5rem)',
+              fontSize: 'clamp(1.3rem, 4.5vw, 2.2rem)',
               fontWeight: 900,
-              textShadow: '0 3px 12px rgba(0,0,0,0.4)',
+              textShadow: '0 2px 8px rgba(0,0,0,0.4)',
               lineHeight: 1.1,
             }}
           >
             تيتا لوئيس
           </h1>
-          <p className="text-orange-200 mt-1" style={{ fontSize: 'clamp(0.65rem, 1.5vw, 0.85rem)', fontWeight: 600 }}>
+          <p className="text-orange-200 mt-0.5" style={{ fontSize: 'clamp(0.5rem, 1vw, 0.65rem)', fontWeight: 600 }}>
             🏁 تعالى نلعب مع تيتا! 🏁
           </p>
         </div>
-
+        {/* ── الأزرار زي ما هي ── */}
         <motion.button
           whileHover={{ scale: 1.07 }}
           whileTap={{ scale: 0.95 }}
@@ -517,8 +521,6 @@ function TitleScreen({
             👤 تسجيل الدخول
           </motion.button>
         )}
-
-
       </motion.div>
 
       <style>{`
