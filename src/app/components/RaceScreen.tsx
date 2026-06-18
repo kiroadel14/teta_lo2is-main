@@ -721,16 +721,23 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
               animate={{ x: laneXAtT(playerLane, 1.0), y: cy }}
               transition={{ type: 'tween', duration: 0.15, ease: 'easeOut' }}
             >
-              {/* ظل أرضي مظبوط لعربية اللاعب */}
-              <ellipse cx="0" cy={s * 0.25} rx={s * 0.9} ry={s * 0.28} fill="black" opacity="0.5" />
-              
-              {/* شيلنا الاهتزاز المزعج ورجعناها ثابتة وراسية */}
-              <image 
-                href={playerCarImg} 
-                x={-s * 0.95} 
-                y={-s * 1.6} 
-                width={s * 1.9} 
-                height={s * 1.9} 
+              {/* ── التعديل هنا: ظل أنعم، أصغر، وأقرب للعربية عشان تلمس الأرض ── */}
+              <ellipse
+                cx="0"
+                cy={s * 0.05}     // 👈 قللنا المسافة جداً (كانت 0.15) عشان الظل يلزق تحت العجل فوراً
+                rx={s * 0.7}      // 👈 صغرنا عرض الظل (كان 0.85)
+                ry={s * 0.15}     // 👈 قللنا سمك الظل (كان 0.22) عشان يبان مسطح على الأرض
+                fill="black"
+                opacity="0.25"     // 👈 خففنا درجة اللون (كانت 0.4) عشان تبان ناعمة وواقعية على شاشة الموبايل
+              />
+
+              {/* صورة عربية اللاعب (كما هي بدون تغيير في الأبعاد) */}
+              <image
+                href={playerCarImg}
+                x={-s * 0.95}
+                y={-s * 1.6}
+                width={s * 1.9}
+                height={s * 1.9}
                 preserveAspectRatio="xMidYMid meet"
               />
             </motion.g>

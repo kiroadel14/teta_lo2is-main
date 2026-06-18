@@ -67,11 +67,13 @@ export function StoryVideoScreen({ level, onPlay, onBack }: StoryVideoScreenProp
       className="relative w-full h-full overflow-hidden"
       style={{ fontFamily: "'Cairo', sans-serif", background: '#000' }}
     >
-      {/* ── YOUTUBE EMBED ── */}
-      {/* ضفنا enablejsapi=1 في اللينك عشان يوتيوب يرضى يكلمنا */}
+     {/* ── YOUTUBE EMBED ── */}
+      {/* الكود ده بيتأكد إن اللينك سليم 100% عشان أمر الـ Autoplay يشتغل */}
       <iframe
         ref={iframeRef}
-        src={`${level.videoUrl}?autoplay=1&controls=1&rel=0&showinfo=0&enablejsapi=1`}
+        src={level.videoUrl.includes('?') 
+          ? `${level.videoUrl}&autoplay=1&controls=1&rel=0&showinfo=0&enablejsapi=1` 
+          : `${level.videoUrl}?autoplay=1&controls=1&rel=0&showinfo=0&enablejsapi=1`}
         title={`Story video — ${level.nameAr}`}
         className="absolute inset-0 w-full h-full border-0"
         style={{ zIndex: 10 }}
