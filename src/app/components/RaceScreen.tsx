@@ -689,7 +689,7 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
         {obstacles.map((obs) => {
           const cx = laneXAtT(obs.lane, obs.t);
           const cy = yAtT(obs.t);
-          // (حافظنا على الحجم 5.5 زي ما طلبت المرة اللي فاتت عشان تبان كبيرة)
+          // 👈 التعديل هنا: كبرنا معامل الحجم الأساسي من 5 لـ 5.5 عشان تزيد حجم العربية "حاجه بسيطه اوي"
           const s = obs.t * 6; // car size
           if (s < 0.5) return null;
 
@@ -697,59 +697,48 @@ export function RaceScreen({ level, onGameOver, onBack }: RaceScreenProps) {
 
           return (
             <g key={obs.id} transform={`translate(${cx}, ${cy})`}>
-              {/* ── التعديل هنا: ظل أخف وأصغر للعربيات العكس ── */}
-              <ellipse
-                cx="0"
-                cy={s * 0.1}      // 👈 قربناه للأرض (كان 0.15)
-                rx={s * 0.65}     // 👈 صغرنا عرضه (كان 0.75)
-                ry={s * 0.12}     // 👈 قللنا سمكه (كان 0.15)
-                fill="black"
-                opacity="0.2"     // 👈 خففنا الشفافية (كانت 0.3)
-              />
-              
-              <motion.image 
-                href={imgSrc} 
-                x={-s * 1.1} 
-                y={-s * 1.8} 
-                width={s * 2.2} 
-                height={s * 2.2} 
+              {/* ظل أرضي متناسق مع الحجم الجديد، قربناه حاجة بسيطة كمان (cy={s * 0.22}) */}
+              <ellipse cx="0" cy={s * 0.22} rx={s * 0.9} ry={s * 0.25} fill="black" opacity="0.45" />
+             
+              {/* التوسيط والابعاد تعتمد على s الجديد، فتكبر العربيه */}
+              <image
+                href={imgSrc}
+                x={-s * 1.1}
+                y={-s * 1.8}
+                width={s * 2.2}
+                height={s * 2.2}
                 preserveAspectRatio="xMidYMid meet"
-                animate={{ y: [-s * 1.8, -s * 1.8 - 0.15, -s * 1.8] }} // اهتزاز خفيف جداً وناعم
-                transition={{ repeat: Infinity, duration: 0.3, ease: "easeInOut" }}
               />
             </g>
           );
         })}
-       {/* Player car — motion.g animates x smoothly between lanes */}
+        {/* Player car — motion.g animates x smoothly between lanes */}
         {(() => {
-          // 👈 التعديل الأول: صغرنا الحجم الأساسي من 10 لـ 8.5
-          const s = 8; // size — ~24% of road width
-          const cy = 95; // slightly above bottom edge
+          const s = 8; // size — ~28% of road width, visible at bottom
+          const cy = 95; // slightly above bottom edge so top 65% is visible
           return (
             <motion.g
               animate={{ x: laneXAtT(playerLane, 1.0), y: cy }}
               transition={{ type: 'tween', duration: 0.15, ease: 'easeOut' }}
             >
-              {/* ── التعديل الثاني: ظل أنعم، أصغر، ومخفي تقريباً تحت العربية ── */}
+              {/* ── التعديل هنا: ظل أنعم، أصغر، وأقرب للعربية عشان تلمس الأرض ── */}
               <ellipse
                 cx="0"
-                cy={s * 0.04}     // 👈 قربناه جداً للأرض (كان 0.05)
-                rx={s * 0.6}      // 👈 صغرنا عرضه (كان 0.7)
-                ry={s * 0.1}      // 👈 قللنا سمكه جداً (كان 0.15)
+                cy={s * 0.05}     // 👈 قللنا المسافة جداً (كانت 0.15) عشان الظل يلزق تحت العجل فوراً
+                rx={s * 0.7}      // 👈 صغرنا عرض الظل (كان 0.85)
+                ry={s * 0.15}     // 👈 قللنا سمك الظل (كان 0.22) عشان يبان مسطح على الأرض
                 fill="black"
-                opacity="0.18"    // 👈 خففنا الشفافية جداً عشان يبان وهمي (كانت 0.25)
+                opacity="0.25"     // 👈 خففنا درجة اللون (كانت 0.4) عشان تبان ناعمة وواقعية على شاشة الموبايل
               />
 
-              {/* صورة عربية اللاعب (تستخدم s الجديد فتكش تلقائياً) */}
-              <motion.image 
-                href={playerCarImg} 
-                x={-s * 0.95} 
-                y={-s * 1.6} 
-                width={s * 1.9} 
-                height={s * 1.9} 
+              {/* صورة عربية اللاعب (كما هي بدون تغيير في الأبعاد) */}
+              <image
+                href={playerCarImg}
+                x={-s * 0.95}
+                y={-s * 1.6}
+                width={s * 1.9}
+                height={s * 1.9}
                 preserveAspectRatio="xMidYMid meet"
-                animate={{ y: [-s * 1.6, -s * 1.6 - 0.2, -s * 1.6] }} // اهتزاز الموتور الهادي
-                transition={{ repeat: Infinity, duration: 0.25, ease: "easeInOut" }}
               />
             </motion.g>
           );
